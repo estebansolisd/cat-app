@@ -1,0 +1,66 @@
+version: '3.7'
+services:
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    ports: 
+      - 8888:80
+    volumes: 
+      - ./backend:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    restart: always
+    depends_on: 
+      - backend
+      - mariadb
+    networks: 
+      - app
+  mariadb:
+    image: mariadb:10.5.6
+    container_name: mariadb
+    restart: always
+    tty: true
+    environment:
+      MYSQL_DATABASE: vet
+      MYSQL_ROOT_PASSWORD: 123456
+    ports: 
+      - "3306:3306"
+    volumes: 
+      - mariadb-data:/var/lib/mysql
+      - ./docker-files/mysql/my.conf:/etc/mysql/my.conf
+    networks:
+      - app
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    links: 
+      - mariadb
+    depends_on: 
+      - mariadb
+    ports: 
+      - 9000:80
+    volumes:
+      - ./backend:/var/www/html
+    networks:
+      - app
+  frontend:
+    build:
+      context: "./frontend"
+      dockerfile: Dockerfile
+    container_name: frontend
+    tty: true
+    ports: 
+      - 3000:3000
+    volumes: 
+      - ./frontend:/app/frontend
+    depends_on: 
+      - backend
+    networks:
+      - app
+networks:
+  app:
+    driver: bridge
+volumes:
+  mariadb-data:
+    driver: local

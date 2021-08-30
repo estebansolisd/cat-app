@@ -1,4 +1,6 @@
 version: '3.7'
+# NOTE
+# ports and passwords for production porpuses should be different or stronger 
 services:
   nginx:
     image: nginx:stable-alpine
@@ -11,22 +13,22 @@ services:
     restart: always
     depends_on: 
       - backend
-      - mariadb
+      - mysql
     networks: 
       - app
-  mariadb:
-    image: mariadb:10.5.6
-    container_name: mariadb
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
     restart: always
-    tty: true
     environment:
-      MYSQL_DATABASE: vet
       MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: vet
+      MYSQL_USER: doctor
+      MYSQL_PASSWORD: 123456
     ports: 
       - "3306:3306"
     volumes: 
-      - mariadb-data:/var/lib/mysql
-      - ./docker-files/mysql/my.conf:/etc/mysql/my.conf
+      - mysql-data:/var/lib/mysql
     networks:
       - app
   backend:
@@ -35,9 +37,9 @@ services:
       dockerfile: Dockerfile
     container_name: backend
     links: 
-      - mariadb
+      - mysql
     depends_on: 
-      - mariadb
+      - mysql
     ports: 
       - 9000:80
     volumes:
@@ -53,7 +55,7 @@ services:
     ports: 
       - 3000:3000
     volumes: 
-      - ./frontend:/app/frontend
+      - ./frontend:/app
     depends_on: 
       - backend
     networks:
@@ -62,5 +64,4 @@ networks:
   app:
     driver: bridge
 volumes:
-  mariadb-data:
-    driver: local
+  mysql-data:

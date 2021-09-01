@@ -23,7 +23,10 @@ class RegisterController extends Controller
         ]);
 
         if ($user) {
-            return response()->json($user, 200);
+            return response()->json([
+                "user" => $user,
+                "token" => $user->createToken("cat_app")->plainTextToken
+            ], 200);
         }
 
         throw ValidationException::withMessages([

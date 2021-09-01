@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   CssBaseline,
@@ -7,6 +7,7 @@ import {
   Typography,
   Container,
   Grid,
+  Button,
 } from "@material-ui/core";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
@@ -15,6 +16,7 @@ import "leaflet/dist/leaflet.css";
 import CatCarousel from "../../components/CatCarousel";
 import items from "../../components/CatCarousel/mock.json";
 import { Cat } from "../../types";
+import { getLoggingData } from "../../util";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,6 +24,11 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+  },
+  toolbar: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   appBarSpacer: theme.mixins.toolbar,
   content: {
@@ -47,12 +54,21 @@ const useStyles = makeStyles((theme) => ({
 export default function Dashboard() {
   const classes = useStyles();
   const position = [51.505, -0.09];
+  const logginData = getLoggingData();
+
+  const handleClick = useCallback(
+    () => {
+      
+    },
+    // eslint-disable-next-line
+    [],
+  )
 
   return (
     <div className={classes.root}>
       <CssBaseline />
       <AppBar position="absolute">
-        <Toolbar>
+        <Toolbar className={classes.toolbar}>
           <Typography
             component="h1"
             variant="h6"
@@ -62,6 +78,21 @@ export default function Dashboard() {
           >
             Dashboard
           </Typography>
+
+          {logginData && (
+            <>
+              <Typography
+                variant="body1"
+                color="inherit"
+                noWrap
+              >
+                {logginData.user.name}
+              </Typography>
+              <Button onClick={handleClick}>
+                Logout
+              </Button>
+            </>
+          )}
         </Toolbar>
       </AppBar>
       <main className={classes.content}>

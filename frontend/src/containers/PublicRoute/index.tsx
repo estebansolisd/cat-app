@@ -1,5 +1,6 @@
 import React, { FC } from "react";
 import { Route, Redirect, RouteComponentProps } from "react-router-dom";
+import { isLoggingIn } from "../../util";
 
 interface PublicRouteProps {
   component:
@@ -14,7 +15,7 @@ const PublicRoute: FC<PublicRouteProps> = ({ component, ...rest }) => {
     <Route
       {...rest}
       render={(props) =>
-        true ? <Redirect to="/" /> : <Component {...props} />
+        isLoggingIn() ? <Redirect to="/" /> : <Component {...props} />
       }
     />
   );
